@@ -9,7 +9,7 @@ set -e
 # libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev supervisor unzip -y
 
 # 安装pyenv
-unzip -oq pyenv.zip -d $HOME
+unzip -oq files/pyenv.zip -d $HOME
 mv $HOME/pyenv-master/pyenv-master $HOME/.pyenv
 rm -rf $HOME/pyenv-master
 echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.bashrc
