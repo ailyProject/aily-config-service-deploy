@@ -4,12 +4,12 @@ set -e
 
 # 更新系统
 # 安装依赖
-sudo apt-get update && sudo apt install build-essential libssl-dev zlib1g-dev \
-libbz2-dev libreadline-dev libsqlite3-dev curl \
-libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev supervisor unzip -y
+# sudo apt-get update && sudo apt install build-essential libssl-dev zlib1g-dev \
+# libbz2-dev libreadline-dev libsqlite3-dev curl \
+# libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev supervisor unzip -y
 
 # 安装pyenv
-unzip -oq pyenv.zip -d $HOME
+unzip -oq files/pyenv.zip -d $HOME
 mv $HOME/pyenv-master/pyenv-master $HOME/.pyenv
 rm -rf $HOME/pyenv-master
 echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.bashrc
