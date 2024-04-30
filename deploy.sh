@@ -8,11 +8,20 @@ sudo apt-get update && sudo apt-get upgrade -y
 # 安装依赖
 sudo apt install build-essential libssl-dev zlib1g-dev \
 libbz2-dev libreadline-dev libsqlite3-dev curl \
-libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev supervisor -y
+libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev supervisor unzip -y
 
 # 安装pyenv
-curl https://pyenv.run | bash
+unzip -oq pyenv.zip -d $HOME
+mv $HOME/pyenv-master/pyenv-master $HOME/.pyenv
+rm -rf $HOME/pyenv-master
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.bashrc
+echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> $HOME/.bashrc
+echo 'eval "$(pyenv init --path)"' >> $HOME/.bashrc
+source $HOME/.bashrc
+
 # 安装python3.9.7
+mkdir -p $HOME/.pyenv/cache
+cp files/Python-3.9.19.tar.xz $HOME/.pyenv/cache
 pyenv install 3.9.19
 pyenv global 3.9.19
 
