@@ -2,13 +2,16 @@
 
 set -e
 
-# 更新系统
-# 安装依赖
+# Assign the absolute path of pwd to DEPLOY_DIR
+DEPLOY_TOOL_DIR=$(cd `dirname $0`; pwd)
+
+# Update the system
+# Install dependencies
 sudo apt-get update && sudo apt install build-essential libssl-dev zlib1g-dev \
 libbz2-dev libreadline-dev libsqlite3-dev curl \
-libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev supervisor unzip -y
+libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev supervisor -y
 
-# 安装pyenv
+# Install pyenv
 # unzip -oq files/pyenv-master.zip -d $HOME
 # mv $HOME/pyenv-master $HOME/.pyenv
 # rm -rf $HOME/pyenv-master
@@ -17,17 +20,17 @@ libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-d
 # echo 'eval "$(pyenv init --path)"' >> $HOME/.bashrc
 # source $HOME/.bashrc
 
-# # 安装python3.9.7
+# # Install Python 3.9.7
 # mkdir -p $HOME/.pyenv/cache
 # cp files/Python-3.9.19.tar.xz $HOME/.pyenv/cache
 # $HOME/.pyenv/bin/pyenv install 3.9.19
 # $HOME/.pyenv/bin/pyenv global 3.9.19
 
-# 克隆代码库
+# Clone the code repository
 cd $HOME
-# 判断是否已经存在aily-config-service目录, 存在则跳过
+# Check if the "aily-config-service" directory already exists, skip if it does
 if [ -d "aily-config-service" ]; then
-    echo "aily-config-service目录已存在"
+    echo "Directory 'aily-config-service' already exists"
 else
     git clone -b py https://github.com/ailyProject/aily-config-service.git
 fi
@@ -35,19 +38,18 @@ fi
 cd aily-config-service
 git pull
 
-# 创建虚拟环境并安装依赖
-
-# 获取当前python版本
-PYTHON_VERSION=$(python3 -V | awk '{print $2}')
-echo "当前python版本: $PYTHON_VERSION"
-
+# Create a virtual environment and install dependencies
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.pip
 
-# 修复pybleno的bug
-cp files/BluetoothHCI.py .venv/lib/$PYTHON_VERSION/site-packages/pybleno/hci_socket/BluetoothHCI/
+# Get the current Python version
+PYTHON_VERSION=$(python3 -V | awk '{print "python" substr($2, 1, length($2)-2)}')
+echo "Current Python version: $PYTHON_VERSION"
 
-# 配置 supervisor
+# Fix the bug in pybleno
+cp $DEPLOY_TOOL_DIR/files/BluetoothHCI.py .venv/lib/$PYTHON_VERSION/site-packages/pybleno/hci_socket/BluetoothHCI/
+
+# Configure supervisor
 SUPERVISOR_CONF_DIR="/etc/supervisor/conf.d"
 SUPERVISOR_CONF_FILE="supervisor/ailyconf.conf"
 
@@ -65,9 +67,9 @@ echo "stderr_logfile_maxbytes = 1MB" >> $SUPERVISOR_CONF_FILE
 sudo cp $SUPERVISOR_CONF_FILE $SUPERVISOR_CONF_DIR
 sudo supervisorctl reload
 
-# 检查命令是否成功执行
+# Check if the command executed successfully
 if [ $? -eq 0 ]; then
-    echo "部署成功"
+    echo "Deployment successful"
 else
-    echo "部署失败"
+    echo "Deployment failed"
 fi
