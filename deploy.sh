@@ -4,13 +4,13 @@ set -e
 
 # 更新系统
 # 安装依赖
-# sudo apt-get update && sudo apt install build-essential libssl-dev zlib1g-dev \
-# libbz2-dev libreadline-dev libsqlite3-dev curl \
-# libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev supervisor unzip -y
+sudo apt-get update && sudo apt install build-essential libssl-dev zlib1g-dev \
+libbz2-dev libreadline-dev libsqlite3-dev curl \
+libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev supervisor unzip -y
 
 # 安装pyenv
-unzip -oq files/pyenv.zip -d $HOME
-mv $HOME/pyenv-master/pyenv-master $HOME/.pyenv
+unzip -oq files/pyenv-master.zip -d $HOME
+mv $HOME/pyenv-master $HOME/.pyenv
 rm -rf $HOME/pyenv-master
 echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.bashrc
 echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> $HOME/.bashrc
@@ -20,8 +20,8 @@ source $HOME/.bashrc
 # 安装python3.9.7
 mkdir -p $HOME/.pyenv/cache
 cp files/Python-3.9.19.tar.xz $HOME/.pyenv/cache
-pyenv install 3.9.19
-pyenv global 3.9.19
+$HOME/.pyenv/bin/pyenv install 3.9.19
+$HOME/.pyenv/bin/pyenv global 3.9.19
 
 # 克隆代码库
 cd $HOME
