@@ -9,19 +9,19 @@ libbz2-dev libreadline-dev libsqlite3-dev curl \
 libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev supervisor unzip -y
 
 # 安装pyenv
-unzip -oq files/pyenv-master.zip -d $HOME
-mv $HOME/pyenv-master $HOME/.pyenv
-rm -rf $HOME/pyenv-master
-echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.bashrc
-echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> $HOME/.bashrc
-echo 'eval "$(pyenv init --path)"' >> $HOME/.bashrc
-source $HOME/.bashrc
+# unzip -oq files/pyenv-master.zip -d $HOME
+# mv $HOME/pyenv-master $HOME/.pyenv
+# rm -rf $HOME/pyenv-master
+# echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.bashrc
+# echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> $HOME/.bashrc
+# echo 'eval "$(pyenv init --path)"' >> $HOME/.bashrc
+# source $HOME/.bashrc
 
-# 安装python3.9.7
-mkdir -p $HOME/.pyenv/cache
-cp files/Python-3.9.19.tar.xz $HOME/.pyenv/cache
-$HOME/.pyenv/bin/pyenv install 3.9.19
-$HOME/.pyenv/bin/pyenv global 3.9.19
+# # 安装python3.9.7
+# mkdir -p $HOME/.pyenv/cache
+# cp files/Python-3.9.19.tar.xz $HOME/.pyenv/cache
+# $HOME/.pyenv/bin/pyenv install 3.9.19
+# $HOME/.pyenv/bin/pyenv global 3.9.19
 
 # 克隆代码库
 cd $HOME
@@ -36,15 +36,23 @@ cd aily-config-service
 git pull
 
 # 创建虚拟环境并安装依赖
+
+# 获取当前python版本
+PYTHON_VERSION=$(python3 -V | awk '{print $2}')
+echo "当前python版本: $PYTHON_VERSION"
+
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.pip
+
+# 修复pybleno的bug
+cp files/BluetoothHCI.py .venv/lib/$PYTHON_VERSION/site-packages/pybleno/hci_socket/BluetoothHCI/
 
 # 配置 supervisor
 SUPERVISOR_CONF_DIR="/etc/supervisor/conf.d"
 SUPERVISOR_CONF_FILE="supervisor/ailyconf.conf"
 
 echo "[program: ailyconf]" > $SUPERVISOR_CONF_FILE
-echo "command = $HOME/aily-config-service/venv/bin/python main.py" >> $SUPERVISOR_CONF_FILE
+echo "command = $HOME/aily-config-service/.venv/bin/python main.py" >> $SUPERVISOR_CONF_FILE
 echo "directory = $HOME/aily-config-service" >> $SUPERVISOR_CONF_FILE
 echo "user = root" >> $SUPERVISOR_CONF_FILE
 echo "autostart = true" >> $SUPERVISOR_CONF_FILE
