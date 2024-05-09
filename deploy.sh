@@ -36,6 +36,7 @@ else
 fi
 
 cd aily-config-service
+git config pull.rebase false
 git pull
 
 # Create a virtual environment and install dependencies
