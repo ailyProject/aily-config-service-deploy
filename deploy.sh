@@ -43,6 +43,15 @@ git pull
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.pip
 
+cp .env.example .env
+
+if [ -d "../aily" ]; then
+    echo "Directory 'aily' already exists"
+else
+    mkdir ../aily
+    cp files/aily/.env_sample ../aily/.env
+fi
+
 # Get the current Python version
 PYTHON_VERSION=$(python3 -V | awk '{print "python" substr($2, 1, length($2)-2)}')
 echo "Current Python version: $PYTHON_VERSION"
