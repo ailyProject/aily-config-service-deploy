@@ -43,13 +43,13 @@ git pull
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.pip
 
-cp .env.example .env
+cp .env.sample .env
 
 if [ -d "../aily" ]; then
     echo "Directory 'aily' already exists"
 else
     mkdir ../aily
-    cp files/aily/.env_sample ../aily/.env
+    cp $DEPLOY_TOOL_DIR/files/aily/.env.sample ../aily/.env
 fi
 
 # Get the current Python version
