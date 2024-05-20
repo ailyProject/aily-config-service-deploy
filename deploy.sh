@@ -9,22 +9,15 @@ DEPLOY_TOOL_DIR=$(cd `dirname $0`; pwd)
 # Install dependencies
 sudo apt-get update && sudo apt install build-essential libssl-dev zlib1g-dev \
 libbz2-dev libreadline-dev libsqlite3-dev curl \
-libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev supervisor -y
+libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev supervisor autoconf automake libtool -y
 
-# Install pyenv
-# unzip -oq files/pyenv-master.zip -d $HOME
-# mv $HOME/pyenv-master $HOME/.pyenv
-# rm -rf $HOME/pyenv-master
-# echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.bashrc
-# echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> $HOME/.bashrc
-# echo 'eval "$(pyenv init --path)"' >> $HOME/.bashrc
-# source $HOME/.bashrc
-
-# # Install Python 3.9.7
-# mkdir -p $HOME/.pyenv/cache
-# cp files/Python-3.9.19.tar.xz $HOME/.pyenv/cache
-# $HOME/.pyenv/bin/pyenv install 3.9.19
-# $HOME/.pyenv/bin/pyenv global 3.9.19
+# 安装bluez-tools
+git clone https://github.com/khvzak/bluez-tools
+cd bluez-tools
+./autogen.sh
+./configure
+make
+sudo make install
 
 # Clone the code repository
 cd $HOME
@@ -32,7 +25,7 @@ cd $HOME
 if [ -d "aily-config-service" ]; then
     echo "Directory 'aily-config-service' already exists"
 else
-    git clone -b py https://github.com/ailyProject/aily-config-service.git
+    git clone -b py2 https://github.com/ailyProject/aily-config-service.git
 fi
 
 cd aily-config-service
@@ -56,8 +49,16 @@ fi
 PYTHON_VERSION=$(python3 -V | awk '{print "python" substr($2, 1, length($2)-2)}')
 echo "Current Python version: $PYTHON_VERSION"
 
-# Fix the bug in pybleno
-cp $DEPLOY_TOOL_DIR/files/BluetoothHCI.py .venv/lib/$PYTHON_VERSION/site-packages/pybleno/hci_socket/BluetoothHCI/
+# # Fix the bug in pybleno
+# cp $DEPLOY_TOOL_DIR/files/BluetoothHCI.py .venv/lib/$PYTHON_VERSION/site-packages/pybleno/hci_socket/BluetoothHCI/
+
+if [ -f "/etc/systemd/system/bluetools.service" ]; then
+    echo "Deploy tool file exists"
+else
+    sudo cp $HOME/aily-config-service/systemd/bluetools.service /etc/systemd/system/
+    sudo systemctl start bluetools.service
+    sudo systemctl enable bluetools.service
+fi
 
 # Configure supervisor
 SUPERVISOR_CONF_DIR="/etc/supervisor/conf.d"
