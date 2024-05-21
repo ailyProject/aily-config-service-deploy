@@ -9,15 +9,36 @@ DEPLOY_TOOL_DIR=$(cd `dirname $0`; pwd)
 # Install dependencies
 sudo apt-get update && sudo apt install build-essential libssl-dev zlib1g-dev \
 libbz2-dev libreadline-dev libsqlite3-dev curl \
-libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev supervisor autoconf automake libtool -y
+libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev \
+libffi-dev liblzma-dev supervisor autoconf automake libtool libglib2.0-dev -y
 
 # 安装bluez-tools
-git clone https://github.com/khvzak/bluez-tools
-cd bluez-tools
-./autogen.sh
-./configure
-make
-sudo make install
+retry_count=0
+max_retry=3
+while [ $retry_count -lt $max_retry ]; do
+    if [ -d "bluez-tools" ]; then
+        echo "Directory 'bluez-tools' already exists"
+    else
+        git clone https://github.com/khvzak/bluez-tools
+    fi
+
+    cd bluez-tools
+    ./autogen.sh
+    ./configure
+    make
+    sudo make install
+    if [ $? -eq 0 ]; then
+        break
+    else
+        echo "Installation failed, retrying..."
+        retry_count=$((retry_count+1))
+    fi
+done
+
+if [ $retry_count -eq $max_retry ]; then
+    echo "Installation failed after $max_retry attempts"
+    exit 1
+fi
 
 # Clone the code repository
 cd $HOME
