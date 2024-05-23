@@ -73,17 +73,18 @@ echo "Current Python version: $PYTHON_VERSION"
 # # Fix the bug in pybleno
 # cp $DEPLOY_TOOL_DIR/files/BluetoothHCI.py .venv/lib/$PYTHON_VERSION/site-packages/pybleno/hci_socket/BluetoothHCI/
 
-if [ -f "/etc/systemd/system/bluetools.service" ]; then
-    echo "Deploy tool file exists"
-else
-    sudo cp $HOME/aily-config-service/systemd/bluetools.service /etc/systemd/system/
-    sudo systemctl start bluetools.service
-    sudo systemctl enable bluetools.service
-fi
+# if [ -f "/etc/systemd/system/bluetools.service" ]; then
+#     echo "Deploy tool file exists"
+# else
+#     sudo cp $HOME/aily-config-service/systemd/bluetools.service /etc/systemd/system/
+#     sudo systemctl start bluetools.service
+#     sudo systemctl enable bluetools.service
+# fi
 
 # Configure supervisor
 SUPERVISOR_CONF_DIR="/etc/supervisor/conf.d"
 SUPERVISOR_CONF_FILE="supervisor/ailyconf.conf"
+BLUETOOL_CONF_FILE="supervisor/bluetools.conf"
 
 echo "[program: ailyconf]" > $SUPERVISOR_CONF_FILE
 echo "command = $HOME/aily-config-service/.venv/bin/python main.py" >> $SUPERVISOR_CONF_FILE
@@ -97,6 +98,10 @@ echo "stderr_logfile = /tmp/ailyconf-error.log" >> $SUPERVISOR_CONF_FILE
 echo "stderr_logfile_maxbytes = 1MB" >> $SUPERVISOR_CONF_FILE
 
 sudo cp $SUPERVISOR_CONF_FILE $SUPERVISOR_CONF_DIR
+
+# deploy bluetool
+sudo cp $BLUETOOL_CONF_FILE $SUPERVISOR_CONF_DIR
+
 sudo supervisorctl reload
 
 # Check if the command executed successfully
